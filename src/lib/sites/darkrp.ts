@@ -11,7 +11,7 @@ const site: SiteConfig = {
   tagline: "A city that runs on players, not scripts.",
   description:
     "HGDarkRP is the Garry's Mod DarkRP server of HG Network. Custom jobs, a working economy, serious roleplay rules and staff who are actually online.",
-  discordUrl: "https://discord.gg/hgnetwork",
+  discordUrl: "https://discord.gg/Sgq7Jq9gwH",
   contactEmail: "support@hgdarkrp.com",
   theme: {
     accent: "#ff2d87",
