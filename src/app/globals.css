@@ -1,26 +1,403 @@
 @import "tailwindcss";
 
+/*
+  Shared neutrals for the whole network. The colorful part (accent, accent-2, accent-3, bg tint)
+  comes from the site config and is set inline on <html> by the root layout.
+*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #14121f;
+  --paper: #ffffff;
+  --muted: #5d5a70;
+  --line: rgba(20, 18, 31, 0.1);
+  --line-strong: rgba(20, 18, 31, 0.22);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-fg: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-3: var(--accent-3);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+
+  --font-display: var(--font-display), "Bricolage Grotesque", system-ui, sans-serif;
+  --font-sans: var(--font-body), "DM Sans", system-ui, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-card: 18px;
+  --radius-pill: 999px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent-3);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent-2);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@layer components {
+/* ---------- Typography ---------- */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+.eyebrow::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--accent);
+  transform: rotate(12deg);
+}
+
+/* The highlighted word in a headline: a marker stroke that draws itself in on load. */
+.marker {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  z-index: 0;
+}
+.marker::after {
+  content: "";
+  position: absolute;
+  left: -0.08em;
+  right: -0.08em;
+  bottom: 0.04em;
+  height: 0.36em;
+  background: var(--accent-3);
+  border-radius: 0.12em;
+  transform: rotate(-1.5deg) scaleX(0);
+  transform-origin: left center;
+  z-index: -1;
+  animation: marker-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) 0.55s forwards;
+}
+@keyframes marker-in {
+  to { transform: rotate(-1.5deg) scaleX(1); }
+}
+
+/* ---------- The network's signature: stickers ----------
+   A rounded shape, 2px ink outline, hard shadow in the site accent. Lifts on hover. */
+.sticker {
+  position: relative;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-card);
+  box-shadow: 5px 5px 0 0 var(--accent);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sticker-2 { box-shadow: 5px 5px 0 0 var(--accent-2); }
+.sticker-3 { box-shadow: 5px 5px 0 0 var(--accent-3); }
+.sticker-flat { box-shadow: none; }
+.sticker-hover:hover,
+.sticker-hover:focus-within {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 0 var(--accent);
+}
+.sticker-2.sticker-hover:hover,
+.sticker-2.sticker-hover:focus-within { box-shadow: 9px 9px 0 0 var(--accent-2); }
+.sticker-3.sticker-hover:hover,
+.sticker-3.sticker-hover:focus-within { box-shadow: 9px 9px 0 0 var(--accent-3); }
+
+/* Buttons use the same construction at pill radius. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--ink);
+  user-select: none;
+  white-space: nowrap;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s, color 0.2s;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 4px 4px 0 0 var(--ink);
+}
+.btn-secondary {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 4px 4px 0 0 var(--ink);
+}
+.btn-primary:hover,
+.btn-secondary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 0 var(--ink);
+}
+.btn-primary:active,
+.btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 0 var(--ink);
+}
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted);
+}
+.btn-ghost:hover { color: var(--ink); background: var(--accent-soft); }
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+/* Small colored chips (facts, tags, categories). */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 0.3rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--paper);
+}
+
+/* ---------- Hero atmosphere ----------
+   Floating color blobs in the site's three accents plus a per-game texture. */
+.blobs {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.blob-a {
+  width: 52vw; height: 52vw; max-width: 720px; max-height: 720px;
+  right: -12vw; top: -20%;
+  background: var(--accent);
+  animation: drift-a 18s ease-in-out infinite alternate;
+}
+.blob-b {
+  width: 38vw; height: 38vw; max-width: 520px; max-height: 520px;
+  left: -10vw; bottom: -25%;
+  background: var(--accent-2);
+  animation: drift-b 22s ease-in-out infinite alternate;
+}
+.blob-c {
+  width: 26vw; height: 26vw; max-width: 380px; max-height: 380px;
+  left: 38%; top: 55%;
+  background: var(--accent-3);
+  opacity: 0.5;
+  animation: drift-c 16s ease-in-out infinite alternate;
+}
+@keyframes drift-a { from { transform: translate(0, 0) scale(1); } to { transform: translate(-6vw, 8vh) scale(1.12); } }
+@keyframes drift-b { from { transform: translate(0, 0) scale(1); } to { transform: translate(7vw, -8vh) scale(1.08); } }
+@keyframes drift-c { from { transform: translate(0, 0); } to { transform: translate(-9vw, -12vh); } }
+
+.texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* Minecraft: a block grid. */
+[data-material="pixel"] .texture {
+  background-image:
+    linear-gradient(to right, rgba(20, 18, 31, 0.07) 2px, transparent 2px),
+    linear-gradient(to bottom, rgba(20, 18, 31, 0.07) 2px, transparent 2px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 70% 90% at 70% 40%, black 10%, transparent 75%);
+}
+/* DarkRP: neon scanlines. */
+[data-material="neon"] .texture {
+  background: repeating-linear-gradient(to bottom, rgba(20, 18, 31, 0.06) 0 2px, transparent 2px 6px);
+  mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+}
+/* Rust: grain. */
+[data-material="grain"] .texture {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.12 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.18;
+}
+
+/* ---------- Motion ---------- */
+/* Page-load sequence for the hero. */
+.rise {
+  animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.rise-2 { animation-delay: 0.1s; }
+.rise-3 { animation-delay: 0.2s; }
+.rise-4 { animation-delay: 0.32s; }
+.rise-5 { animation-delay: 0.45s; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Scroll reveal: hidden only once JS has mounted, so content is never lost without it. */
+html[data-js] [data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+html[data-js] [data-reveal].in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Gentle bob for the join card. */
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-0.6deg); }
+  50% { transform: translateY(-8px) rotate(0.4deg); }
+}
+
+/* The network marquee strip. */
+.marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+/* Live status dot. */
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--muted);
+  flex: none;
+}
+.dot-online {
+  background: #18c964;
+  animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(24, 201, 100, 0.6); }
+  100% { box-shadow: 0 0 0 12px rgba(24, 201, 100, 0); }
+}
+
+/* Wiggle on hover for icon tiles. */
+.wiggle:hover { animation: wiggle 0.5s ease-in-out; }
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-8deg) scale(1.06); }
+  75% { transform: rotate(8deg) scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .blob, .float, .marquee-track, .dot-online, .wiggle:hover, .marker::after {
+    animation: none;
+  }
+  .marker::after { transform: rotate(-1.5deg) scaleX(1); }
+  html[data-js] [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .sticker, .btn { transition: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ---------- Markdown content ---------- */
+.prose {
+  color: var(--ink);
+  line-height: 1.75;
+  font-size: 1.04rem;
+}
+.prose > * + * { margin-top: 1em; }
+.prose h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 1.6rem;
+  margin-top: 2.2em;
+  padding-top: 0.9em;
+  border-top: 2px solid var(--line);
+}
+.prose h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-top: 1.6em;
+}
+.prose a { color: var(--accent-2); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li + li { margin-top: 0.35em; }
+.prose li::marker { color: var(--accent); font-weight: 700; }
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--accent-soft);
+  border-radius: 6px;
+  padding: 0.1em 0.4em;
+}
+.prose pre {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  border-radius: 14px;
+}
+.prose pre code { background: none; padding: 0; color: inherit; }
+.prose blockquote {
+  border-left: 4px solid var(--accent);
+  padding-left: 1rem;
+  color: var(--muted);
+}
+.prose strong { font-weight: 700; }
+.prose hr { border: 0; border-top: 2px solid var(--line); }
+.prose table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.prose th, .prose td { border: 2px solid var(--line); padding: 0.55rem 0.75rem; text-align: left; }
+.prose th { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--accent-soft); }
+
 }

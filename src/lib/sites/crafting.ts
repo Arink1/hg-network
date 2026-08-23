@@ -1,0 +1,157 @@
+import type { SiteConfig } from "./types";
+
+const site: SiteConfig = {
+  key: "crafting",
+  name: "HGCrafting",
+  shortName: "Crafting",
+  game: "minecraft",
+  gameLabel: "Minecraft",
+  domain: "hgcrafting.com",
+  url: "https://hgcrafting.com",
+  tagline: "Survival that rewards the long game.",
+  description:
+    "HGCrafting is the Minecraft server of HG Network. Survival with land claims, a player economy, custom enchants and seasons that actually end.",
+  discordUrl: "https://discord.gg/hgnetwork",
+  contactEmail: "support@hgcrafting.com",
+  theme: {
+    accent: "#17b857",
+    accent2: "#1d9bf0",
+    accent3: "#ffd23f",
+    accentInk: "#0a2a15",
+    bg: "#f2fbf5",
+    material: "pixel",
+  },
+  servers: [
+    {
+      key: "survival",
+      name: "Survival",
+      address: "play.hgcrafting.com",
+      status: { provider: "minecraft", host: "play.hgcrafting.com", port: 25565 },
+    },
+  ],
+  hero: {
+    eyebrow: "Minecraft Java 1.21 / Season 1",
+    headline: "Build something worth [coming back] to.",
+    sub: "Claim land, run a shop, enchant past vanilla limits and race the season leaderboard. No pay to win, no resets without warning.",
+  },
+  facts: [
+    { label: "Version", value: "Java 1.21.x" },
+    { label: "Season", value: "Season 1, ends Dec 1" },
+    { label: "Mode", value: "Survival, hard" },
+    { label: "Claims", value: "Free, grows with playtime" },
+  ],
+  features: [
+    {
+      icon: "shield",
+      title: "Claims that cost nothing",
+      body: "Every player starts with a claim block budget that grows every hour online. Griefing is a ban, not a feature.",
+    },
+    {
+      icon: "coins",
+      title: "A real player economy",
+      body: "Chest shops, auction house and a currency that only enters the world through play. Ranks never print money.",
+    },
+    {
+      icon: "pickaxe",
+      title: "Custom enchants and jobs",
+      body: "Forty extra enchants, a jobs board and weekly challenges on top of vanilla survival.",
+    },
+    {
+      icon: "clock",
+      title: "Seasons with a finish line",
+      body: "Each season runs four to six months. Winners get a permanent title and the map goes into the archive for download.",
+    },
+  ],
+  playerIdentity: {
+    kind: "minecraft-username",
+    label: "Minecraft username",
+    placeholder: "Notch",
+    help: "Use the exact Java Edition username you log in with. We check it against Mojang before checkout.",
+  },
+  store: {
+    provider: "stripe",
+    currency: "usd",
+    categories: [
+      { id: "ranks", name: "Ranks", blurb: "Monthly ranks that fund the server. Cosmetics and convenience only." },
+      { id: "keys", name: "Crate keys", blurb: "Cosmetic crates. Drops are listed in game before you open anything." },
+      { id: "claims", name: "Claim blocks", blurb: "Extra claim blocks if you would rather not wait on playtime." },
+    ],
+    packages: [
+      {
+        id: "rank-settler",
+        name: "Settler",
+        category: "ranks",
+        price: 499,
+        interval: "month",
+        description: "The starter rank. Enough to make your base feel like home.",
+        perks: ["2 homes", "/nick and colored chat", "Settler prefix", "Access to the Settler lounge"],
+        commands: ["lp user {player} parent add settler"],
+        expireCommands: ["lp user {player} parent remove settler"],
+      },
+      {
+        id: "rank-artisan",
+        name: "Artisan",
+        category: "ranks",
+        price: 999,
+        interval: "month",
+        featured: true,
+        badge: "Most popular",
+        description: "For players who run shops and build big.",
+        perks: ["5 homes", "/craft and /enderchest anywhere", "Cosmetic particle trails", "Artisan prefix", "Everything in Settler"],
+        commands: ["lp user {player} parent add artisan"],
+        expireCommands: ["lp user {player} parent remove artisan"],
+      },
+      {
+        id: "rank-warden",
+        name: "Warden",
+        category: "ranks",
+        price: 1999,
+        interval: "month",
+        description: "Top rank. Funds a full month of hosting on its own.",
+        perks: ["10 homes", "Custom join message", "Pet cosmetics and hats", "Warden prefix", "Everything in Artisan"],
+        commands: ["lp user {player} parent add warden"],
+        expireCommands: ["lp user {player} parent remove warden"],
+      },
+      {
+        id: "key-season",
+        name: "Season crate key",
+        category: "keys",
+        price: 299,
+        description: "One key for the Season crate. Cosmetics and titles only.",
+        perks: ["1 Season crate key", "Delivered to your inventory on next login"],
+        commands: ["crates give key season 1 {player}"],
+      },
+      {
+        id: "key-season-5",
+        name: "Season crate keys x5",
+        category: "keys",
+        price: 1199,
+        badge: "Save 20%",
+        description: "Five Season crate keys.",
+        perks: ["5 Season crate keys", "Delivered on next login"],
+        commands: ["crates give key season 5 {player}"],
+      },
+      {
+        id: "claim-500",
+        name: "500 claim blocks",
+        category: "claims",
+        price: 399,
+        description: "Skip the wait and expand today.",
+        perks: ["500 bonus claim blocks", "Permanent for this season"],
+        commands: ["acb {player} 500"],
+      },
+    ],
+  },
+  staff: {
+    intro:
+      "HGCrafting is run by a small team of players. We recruit from the community and we expect staff to play, not just moderate.",
+    roles: [
+      { name: "Helper", blurb: "Answer questions, report issues, welcome new players. The first step.", open: true },
+      { name: "Moderator", blurb: "Handle reports, claim disputes and chat. Promoted from Helper.", open: false },
+      { name: "Builder", blurb: "Spawn, event arenas and seasonal hubs. Portfolio required.", open: true },
+    ],
+    applyUrl: "https://discord.gg/hgnetwork",
+  },
+};
+
+export default site;
