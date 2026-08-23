@@ -1,23 +1,31 @@
 # Deploying the three sites
 
-## 1. Push the repo
+## 1. The repo
 
-```bash
-git add -A
-git commit -m "HG Network sites"
-gh repo create hg-network --private --source . --push
-```
+Private GitHub repo: https://github.com/Arink1/hg-network (branch `main`).
 
-## 2. Create three Vercel projects from the same repo
+## 2. The three Vercel projects
 
-In Vercel, click **Add New Project**, import `hg-network`, and repeat three times. Name them `hgcrafting`, `hgdarkrp`, `hgrusty`. For each project:
+Done on 2026-08-22 with the Vercel CLI. Team `AK's projects` (`aks-projects-ce32c1de`):
 
-1. Framework preset: Next.js (detected). Leave build settings alone.
-2. Environment variables (Production, and Preview if you want preview deploys):
+| Project | `NEXT_PUBLIC_SITE` | Vercel URL | Domains attached |
+| --- | --- | --- | --- |
+| `hgcrafting` | `crafting` | https://hgcrafting.vercel.app | hgcrafting.com, www.hgcrafting.com |
+| `hgdarkrp` | `darkrp` | https://hgdarkrp.vercel.app | hgdarkrp.com, www.hgdarkrp.com |
+| `hgrusty` | `rusty` | https://hgrusty.vercel.app | hgrusty.com, www.hgrusty.com |
+
+The repo is not yet connected to Vercel for automatic deploys, because the Vercel account has no GitHub login connection. Two ways to ship a change:
+
+- **Manual (works now)**: from the repo root, link to a project and deploy it. Repeat for each site.
+  ```bash
+  rm -rf .vercel && vercel link --yes --project hgcrafting --scope aks-projects-ce32c1de && vercel deploy --prod --yes --scope aks-projects-ce32c1de
+  ```
+- **Automatic (recommended)**: in Vercel, Account Settings > Authentication > add GitHub as a login connection, then in each project Settings > Git > connect `Arink1/hg-network`. After that every push to `main` deploys all three.
+
+Remaining environment variables (add per project, then redeploy):
 
 | Variable | hgcrafting | hgdarkrp | hgrusty |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_SITE` | `crafting` | `darkrp` | `rusty` |
 | `STRIPE_SECRET_KEY` | same for all three | | |
 | `STRIPE_WEBHOOK_SECRET` | per site, see step 4 | | |
 | `SUPABASE_URL` | same for all three | | |
@@ -25,9 +33,20 @@ In Vercel, click **Add New Project**, import `hg-network`, and repeat three time
 | `DELIVERY_API_KEY` | one random string per site (`openssl rand -hex 32`) | | |
 | `STEAM_API_KEY` | not needed | optional | optional |
 
-3. Deploy. Then under **Settings > Domains** add `hgcrafting.com` and `www.hgcrafting.com` (and the equivalents for the other two). Point each domain's DNS at Vercel as instructed there.
+Add one with the CLI (value from stdin): `printf 'value' | vercel env add NAME production --scope aks-projects-ce32c1de` while linked to the project.
 
-Until `STRIPE_SECRET_KEY` is set, the store shows packages with a "store opens at launch" label and no checkout. That is intentional so the sites can go live before payments are ready. Pages are built statically, so after adding or changing any environment variable, trigger a redeploy (Deployments > Redeploy) for it to take effect.
+### DNS (Namecheap)
+
+The domains use Namecheap's nameservers. In Namecheap > Domain List > Manage > Advanced DNS, add for each domain:
+
+| Type | Host | Value | TTL |
+| --- | --- | --- | --- |
+| A | `@` | `76.76.21.21` | Automatic |
+| CNAME | `www` | `cname.vercel-dns.com` | Automatic |
+
+Delete any existing parking `A`/`CNAME`/URL redirect records for `@` and `www` first. Vercel verifies automatically and issues SSL within minutes of the records propagating.
+
+Until `STRIPE_SECRET_KEY` is set, the store shows packages with a "store opens at launch" label and no checkout. That is intentional so the sites can go live before payments are ready. Pages are built statically, so after adding or changing any environment variable, trigger a redeploy for it to take effect.
 
 ## 3. Supabase
 
